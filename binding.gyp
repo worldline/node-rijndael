@@ -16,6 +16,7 @@
             ],
             "include_dirs": [
                 ".",
+                "lib",
                 "lib/libmcrypt",
                 "lib/libmcrypt/include",
                 "lib/libmcrypt/lib",
