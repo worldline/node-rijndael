@@ -1,5 +1,5 @@
 {
-  "name": "node-rijndael",
+  "name": "node-rijndael-static",
   "version": "0.2.3",
   "author": "Eli Skeggs <skeggse@gmail.com>",
   "description": "A native binding to mcrypt's rijndael encryption.",
@@ -9,10 +9,10 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/skeggse/node-rijndael.git"
+    "url": "https://github.com/worldline/node-rijndael.git"
   },
-  "homepage": "https://github.com/skeggse/node-rijndael",
-  "bugs": "https://github.com/skeggse/node-rijndael/issues",
+  "homepage": "https://github.com/worldline/node-rijndael",
+  "bugs": "https://github.com/worldline/node-rijndael/issues",
   "keywords": [
     "rijndael",
     "aes",
