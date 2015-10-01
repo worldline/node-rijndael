@@ -176,3 +176,6 @@
 
 /* Define to rpl_realloc if the replacement function should be used. */
 /* #undef realloc */
+
+/* compatibilty for centos6 */
+__asm__(".symver memcpy,memcpy@GLIBC_2.2.5");

@@ -11,6 +11,8 @@
 using namespace v8;
 using namespace node;
 
+/* compatibilty for centos6 */
+__asm__(".symver memcpy,memcpy@GLIBC_2.2.5");
 NAN_METHOD(Rijndael) {
   NanScope();
 
