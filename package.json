@@ -1,6 +1,6 @@
 {
   "name": "node-rijndael-static",
-  "version": "0.2.4",
+  "version": "0.2.5",
   "author": "Eli Skeggs <skeggse@gmail.com>",
   "description": "A native binding to mcrypt's rijndael encryption.",
   "main": "./index",
@@ -24,7 +24,7 @@
     "compatibility"
   ],
   "dependencies": {
-    "nan": "~1.5.0"
+    "nan": "^2.7.0"
   },
   "devDependencies": {
     "chai": "^1.9.1",

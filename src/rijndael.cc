@@ -14,7 +14,7 @@ using namespace node;
 /* compatibilty for centos6 */
 __asm__(".symver memcpy,memcpy@GLIBC_2.2.5");
 NAN_METHOD(Rijndael) {
-  NanScope();
+  Nan::HandleScope scope;
 
   MCRYPT rijndael_module;
 
@@ -31,53 +31,53 @@ NAN_METHOD(Rijndael) {
   bool encrypt;
   char* mode;
 
-  if (args.Length() < 1 || !Buffer::HasInstance(args[0])) {
+  if (info.Length() < 1 || !Buffer::HasInstance(info[0])) {
     err = 1; error_message = (char*) "data must be a buffer";
-  } else if (args.Length() < 2 || !Buffer::HasInstance(args[1])) {
+  } else if (info.Length() < 2 || !Buffer::HasInstance(info[1])) {
     err = 1; error_message = (char*) "key must be a buffer";
-  } else if (args.Length() < 3 || !args[2]->IsBoolean()) {
+  } else if (info.Length() < 3 || !info[2]->IsBoolean()) {
     err = 1; error_message = (char*) "encryption must be a boolean";
-  } else if (args.Length() < 4) {
+  } else if (info.Length() < 4) {
     err = 1; error_message = (char*) "block mode must be a string";
-  } else if (args.Length() < 5) {
+  } else if (info.Length() < 5) {
     err = 1; error_message = (char*) "iv must be a buffer or null";
   }
 
   if (err == 1) {
-    NanThrowTypeError(error_message);
-    NanReturnUndefined();
+    Nan::ThrowTypeError(error_message);
+    return;
   }
 
-  if (Buffer::HasInstance(args[4])) {
-    iv = Buffer::Data(args[4]);
+  if (Buffer::HasInstance(info[4])) {
+    iv = Buffer::Data(info[4]);
   }
 
-  String::Utf8Value modeStr(args[3]->ToString());
+  String::Utf8Value modeStr(info[3]->ToString());
 
-  text = Buffer::Data(args[0]);
-  key = Buffer::Data(args[1]);
-  encrypt = args[2]->BooleanValue();
+  text = Buffer::Data(info[0]);
+  key = Buffer::Data(info[1]);
+  encrypt = info[2]->BooleanValue();
   mode = *modeStr;
 
-  text_len = Buffer::Length(args[0]);
-  key_len = Buffer::Length(args[1]);
+  text_len = Buffer::Length(info[0]);
+  key_len = Buffer::Length(info[1]);
 
   if (key_len != 16 && key_len != 24 && key_len != 32) {
-    NanThrowError("key length does not match algorithm parameters");
-    NanReturnUndefined();
+    Nan::ThrowError("key length does not match algorithm parameters");
+    return;
   }
 
   rijndael_module = mcrypt_module_open((char*) "rijndael-256", NULL, mode, NULL);
   if (rijndael_module == MCRYPT_FAILED) {
-    NanThrowError("rijndael mcrypt module failed to load");
-    NanReturnUndefined();
+    Nan::ThrowError("rijndael mcrypt module failed to load");
+    return;
   }
 
   err = mcrypt_generic_init(rijndael_module, (void*) key, key_len, iv);
   if (err < 0) {
     mcrypt_module_close(rijndael_module);
-    NanThrowError(mcrypt_strerror(err));
-    NanReturnUndefined();
+    Nan::ThrowError(mcrypt_strerror(err));
+    return;
   }
 
   data_size = (((text_len - 1) / 32) + 1) * 32;
@@ -93,21 +93,22 @@ NAN_METHOD(Rijndael) {
   if (err < 0) {
     mcrypt_module_close(rijndael_module);
     free(data);
-    NanThrowError(mcrypt_strerror(err));
-    NanReturnUndefined();
+    Nan::ThrowError(mcrypt_strerror(err));
+    return;
   }
   
   mcrypt_generic_deinit(rijndael_module);
 
-  Local<Object> buffer = NanNewBufferHandle((char*) data, data_size);
+  Local<Object> buffer = Nan::NewBuffer((char*) data, data_size).ToLocalChecked();
   mcrypt_module_close(rijndael_module);
   free(data);
-  NanReturnValue(buffer);
+  info.GetReturnValue().Set(buffer);
 }
 
 void init(Handle<Object> exports) {
-  exports->Set(NanNew<String>("rijndael"),
-    NanNew<FunctionTemplate>(Rijndael)->GetFunction());
+  Nan::HandleScope scope;
+  exports->Set(Nan::New<String>("rijndael").ToLocalChecked(),
+    Nan::New<FunctionTemplate>(Rijndael)->GetFunction());
 }
 
 NODE_MODULE(rijndael, init)
